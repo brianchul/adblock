@@ -1,0 +1,2 @@
+hostname = event.momoshop.com.tw
+^https:\/\/event\.momoshop\.com\.tw\/punch[0-9]*\.PROMO$ url script-request-body https://raw.githubusercontent.com/brianchul/quantumult-X/main/scripts/momo/momo_cookie_fetch.js

@@ -1,0 +1,7 @@
+{
+    "name": "Momo Checkin",
+    "description": "momo自動簽到",
+    "task": [
+        "30 8 * * * https://raw.githubusercontent.com/brianchul/quantumult-X/main/scripts/momo/momo_checkin.js, tag=自動簽到📝, enabled=false"
+    ]
+  }

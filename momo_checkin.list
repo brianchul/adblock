@@ -1,2 +1,0 @@
-hostname = event.momoshop.com.tw
-^https:\/\/event\.momoshop\.com\.tw\/punch\.PROMO$ url script-request-header https://raw.githubusercontent.com/brianchul/adblock/main/momo_checkin_info.js
