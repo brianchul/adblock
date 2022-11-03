@@ -40,7 +40,7 @@ let checkinRequest = {
 };
 
 function getEventPageUrl() {
-  $httpClient.post(mainPageRequest, function (error, response, data) {
+  $task.post(mainPageRequest, function (error, response, data) {
     if (error) {
       momoNotify(
         '取得活動頁面失敗 ‼️',
@@ -108,7 +108,7 @@ function getEventPageUrl() {
 }
 
 function getJavascriptUrl() {
-  $httpClient.get(eventPageRequest, function (error, response, data) {
+  $task.get(eventPageRequest, function (error, response, data) {
     if (error) {
       momoNotify(
         '取得 JS URL 失敗 ‼️',
@@ -144,7 +144,7 @@ function getJavascriptUrl() {
 }
 
 function getPromoCloudConfig() {
-  $httpClient.get(jsCodeRequest, function (error, response, data) {
+  $task.get(jsCodeRequest, function (error, response, data) {
     if (error) {
       momoNotify(
         '取得活動 ID 失敗 ‼️',
@@ -181,7 +181,7 @@ function getPromoCloudConfig() {
 }
 
 function checkIn() {
-  $httpClient.post(checkinRequest, function (error, response, data) {
+  $task.post(checkinRequest, function (error, response, data) {
     if (error) {
       momoNotify(
         '簽到失敗 ‼️',
