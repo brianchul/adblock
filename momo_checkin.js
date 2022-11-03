@@ -3,12 +3,13 @@ const momoHeaders = {
   'Content-Type': 'application/json;charset=utf-8',
 };
 function momoNotify(subtitle = '', message = '') {
-  $notification.post('🍑 Momo 每日簽到', subtitle, message, { 'url': 'momo.app://' });
+  $notify('🍑 Momo 每日簽到', subtitle, message, { 'url': 'momo.app://' });
 };
 
 const mainPageRequest = {
   url: 'https://app.momoshop.com.tw/api/moecapp/goods/getMainPageV5',
   headers: momoHeaders,
+  method: "POST", // Optional, default GET.
   body: {
     'ccsession': '',
     'custNo': '',
@@ -20,16 +21,19 @@ const mainPageRequest = {
 
 let eventPageRequest = {
   url: '',
+  method: "GET", // Optional, default GET.
   headers: momoHeaders,
 }
 
 let jsCodeRequest = {
   url: '',
+  method: "GET", // Optional, default GET.
   headers: momoHeaders,
 }
 
 let checkinRequest = {
   url: 'https://event.momoshop.com.tw/punch.PROMO',
+  method: "POST", // Optional, default GET.
   headers: {
     'Cookie': $prefs.valueForKey('momoCookie'),
     'Content-Type': 'application/json;charset=utf-8',
@@ -40,7 +44,7 @@ let checkinRequest = {
 };
 
 function getEventPageUrl() {
-  $task.post(mainPageRequest, function (error, response, data) {
+  $task.fetch(mainPageRequest, function (error, response, data) {
     if (error) {
       momoNotify(
         '取得活動頁面失敗 ‼️',
@@ -108,7 +112,7 @@ function getEventPageUrl() {
 }
 
 function getJavascriptUrl() {
-  $task.get(eventPageRequest, function (error, response, data) {
+  $task.fetch(eventPageRequest, function (error, response, data) {
     if (error) {
       momoNotify(
         '取得 JS URL 失敗 ‼️',
@@ -144,7 +148,7 @@ function getJavascriptUrl() {
 }
 
 function getPromoCloudConfig() {
-  $task.get(jsCodeRequest, function (error, response, data) {
+  $task.fetch(jsCodeRequest, function (error, response, data) {
     if (error) {
       momoNotify(
         '取得活動 ID 失敗 ‼️',
@@ -181,7 +185,7 @@ function getPromoCloudConfig() {
 }
 
 function checkIn() {
-  $task.post(checkinRequest, function (error, response, data) {
+  $task.fetch(checkinRequest, function (error, response, data) {
     if (error) {
       momoNotify(
         '簽到失敗 ‼️',
