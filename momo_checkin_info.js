@@ -1,5 +1,5 @@
 function momoNotify(subtitle = '', message = '') {
-  $notify('🍑 Momo token', subtitle, message, { 'url': 'momo.app://' });
+  $notify('🍑 Momo token', subtitle, message);
 };
 
 if ($request.method === 'POST') {
@@ -38,4 +38,4 @@ if ($request.method === 'POST') {
     );
   }
 }
-$done({})
+$done({});
