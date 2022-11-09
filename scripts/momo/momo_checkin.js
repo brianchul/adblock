@@ -258,5 +258,6 @@ console.log($prefs.valueForKey('momoCookie'))
 console.log($prefs.valueForKey('momoBody'));
 console.log($prefs.valueForKey('momoUserAgent'));
 const rtime = Math.floor(Math.random() * 600);
+console.log(`wait for ${rtime} seconds to run`)
 setTimeout(() => getEventPageUrl(), rtime*1000)
 
