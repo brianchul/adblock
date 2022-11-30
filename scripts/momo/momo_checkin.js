@@ -42,7 +42,7 @@ let jsCodeRequest = {
 }
 
 let checkinRequest = {
-  url: 'https://event.momoshop.com.tw/punch11.PROMO',
+  url: 'https://event.momoshop.com.tw/punch.PROMO',
   method: "POST", // Optional, default GET.
   headers: {
     'Cookie': $prefs.valueForKey('momoCookie'),
