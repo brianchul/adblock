@@ -127,7 +127,7 @@ function getJavascriptUrl() {
         console.log('get javascript ok');
         try {
           const data = response.body
-          const re = /https:\/\/(.*)\/promo-cloud-setPunch-v[0-9]{3}\.js\?t=[0-9]{13}/i;
+          const re = /https:\/\/(.*)\/promo-cloud-setPunch-[a-z0-9]{3,}\.js\?t=[0-9]{13}/i
           const found = data.match(re);
           const url = found[0];
           jsCodeRequest.url = url;
