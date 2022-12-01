@@ -59,19 +59,70 @@ const checkinRequest = {
 
 function getEventPageUrl() {
     console.log('----------------------------------------------------');
-    const eventUrl =
-        'https://www.momoshop.com.tw/edm/cmmedm.jsp?lpn=O5kvApTQmCi&n=1'
-    eventPageRequest.url = eventUrl;
-    eventPageRequest.headers.Cookie = '';
+    $task.fetch(mainPageRequest).then(
+        (response) => {
+            if (response.statusCode === 200) {
+                try {
+                    const obj = JSON.parse(response.body);
+                    if (obj.success === true) {
+                        const mainInfo = obj.mainInfo;
+                        let found = false;
+                        for (const info of mainInfo) {
+                            if (info.adInfo && info.columnType === '30') {
+                                const adInfo = info.adInfo[1];
+                                const actionUrl = adInfo.action.actionValue;
+                                console.log('Momo 簽到活動頁面 👉' + actionUrl);
+                                found = true;
+                                eventPageRequest.url = actionUrl;
+                                eventPageRequest.headers.Cookie = '';
 
-    const EDM_URL = new URL(eventUrl);
-    checkinRequest.body.edm_npn = EDM_URL.searchParams.get('npn');
-    checkinRequest.body.edm_lpn = EDM_URL.searchParams.get('lpn');
-    const enCusRe = /ck\_encust=(\d*)\;/i;
-    const enCus = $prefs.valueForKey('momoCookie').match(enCusRe)[1];
-    checkinRequest.body.enCustNo = enCus;
+                                const EDM_URL = new URL(actionUrl);
+                                checkinRequest.body.edm_npn =
+                                    EDM_URL.searchParams.get('npn');
+                                checkinRequest.body.edm_lpn =
+                                    EDM_URL.searchParams.get('lpn');
+                                const enCusRe = /ck\_encust=(\d*)\;/i;
+                                const enCus = $prefs
+                                    .valueForKey('momoCookie')
+                                    .match(enCusRe)[1];
+                                checkinRequest.body.enCustNo = enCus;
 
-    getJavascriptUrl();
+                                getJavascriptUrl();
+                                // 舊版
+                                // for (const adInfo of info.adInfo) {
+                                //   if (adInfo.adTitle && adInfo.adTitle === '天天簽到') {
+                                //     const actionUrl = adInfo.action.actionValue;
+                                //     console.log('Momo 簽到活動頁面 👉' + actionUrl);
+                                //     found = true;
+                                //     eventPageRequest.url = actionUrl;
+                                //     eventPageRequest.headers.cookie = '';
+                                //     getJavascriptUrl();
+                                //   }
+                                // }
+                            }
+                        }
+                        if (!found) {
+                            console.log('找不到簽到活動頁面');
+                            $done();
+                        }
+                    } else {
+                        momoNotify('取得活動頁面失敗 ‼️', obj.resultMessage);
+                        $done();
+                    }
+                } catch (error) {
+                    momoNotify('取得活動頁面失敗 ‼️', error);
+                    $done();
+                }
+            } else {
+                momoNotify('Cookie 已過期 ‼️', '請重新登入');
+                $done();
+            }
+        },
+        (reason) => {
+            momoNotify('取得活動頁面失敗 ‼️', '連線錯誤');
+            $done();
+        }
+    );
 }
 
 function getJavascriptUrl() {
@@ -117,8 +168,8 @@ function getPromoCloudConfig() {
                     const mpNo = data.match(mpNoRe)[2];
                     console.log('Momo 活動 mID 👉' + mpNo);
 
-
-                    const dtNoRe = /cloudLotterySetting\.dt_promo_no(.*)'(.*)'/i;
+                    const dtNoRe =
+                        /cloudLotterySetting\.dt_promo_no(.*)'(.*)'/i;
                     const dtNo = data.match(dtNoRe)[2];
                     console.log('Momo 活動 dtID 👉' + dtNo);
 
@@ -172,7 +223,7 @@ function checkIn() {
                         ERROR: 'ERROR\n很抱歉，目前系統繁忙，請稍後再試',
                         E_CN: '請重新登入',
                     };
-                    if (obj.returnMsg === 'OK') {
+                    if (obj.returnMsg === 'INS') {
                         momoNotify('今日抽獎成功 ✅', '');
                     } else {
                         momoNotify('抽獎失敗 ‼️', returnMsg[obj.returnMsg]);
@@ -191,11 +242,8 @@ function checkIn() {
         console.log(error);
         $done();
     }
-    
 }
 console.log($prefs.valueForKey('momoCookie'));
 console.log($prefs.valueForKey('momoBody'));
 console.log($prefs.valueForKey('momoUserAgent'));
-const rtime = Math.floor(Math.random() * 600);
-console.log(`wait for ${rtime} seconds to run`);
-setTimeout(() => getEventPageUrl(), 1 * 1000);
+getEventPageUrl()
