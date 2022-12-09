@@ -1,0 +1,2 @@
+hostname = www.momoshop.com.tw
+^https:\/\/www\.momoshop\.com\.tw\/event\/appRedirect\.jsp\?.*employeeNO url script-request-header https://raw.githubusercontent.com/brianchul/quantumult-X/main/scripts/momo/momo_friend_id_fetch.js
