@@ -167,13 +167,21 @@ function getPromoCloudConfig() {
     );
 }
 function generateShareLink() {
-    $task.fetch(shareRequest).then(
-        (response) => {
-            if (response.statusCode === 200) {
-                console.log('share link ok');
-                momoNotify('分享連結已產生 ✅', '');
-            }
-        })
+    try{
+        $task.fetch(shareRequest).then(
+            (response) => {
+                if (response.statusCode === 200) {
+                    console.log('share link ok');
+                    momoNotify('分享連結已產生 ✅', '');
+                }else{
+                    momoNotify('分享連結產生錯誤 !!', '');
+                }
+                $done();
+            })
+    } catch (error) {
+        console.log(error);
+        $done();
+    }
 }
 console.log($prefs.valueForKey('momoCookie'));
 console.log($prefs.valueForKey('momoUserAgent'));
