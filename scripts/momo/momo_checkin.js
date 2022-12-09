@@ -188,18 +188,23 @@ function checkIn() {
                     console.log('check in ok');
                     const data = response.body;
                     const obj = JSON.parse(data);
+                    const responses = {
+                        'D'             : '請於活動時間內參加活動',
+                        'L'             : '請重新登入',
+                        'APP'           : '請在APP參加此活動',
+                        'ERR'           : '很抱歉 目前系統繁忙 請稍後再試',
+                        'ERROR'         : 'ERROR 很抱歉，目前系統繁忙，請稍後再試',
+                        'EPN'           : 'ERROR 活動不存在',
+                        'EPN2'           : 'ERROR 活動不存在',
+                        //punch(簽到)專用訊息
+                        'OK'          : '簽到成功，感謝您對本活動的支持',
+                        'RA'          : '今日已完成簽到',
+                        'MAX'         : '簽到已達上限'
+                    }
                     if (obj.data.status === 'OK') {
                         momoNotify('今日簽到成功 ✅', '');
-                    } else if (obj.data.status === 'RA') {
-                        momoNotify('簽到失敗 ‼️', '本日已簽到');
-                    } else if (obj.data.status === 'D') {
-                        momoNotify('簽到失敗 ‼️', '活動已到期');
-                    } else if (obj.data.status === 'MAX') {
-                        momoNotify('簽到失敗 ‼️', '簽到人數達到上限');
-                    } else if (obj.data.status === 'EPN2') {
-                        momoNotify('簽到失敗 ‼️', '活動不存在');
                     } else {
-                        momoNotify('簽到失敗 ‼️', obj.data.status);
+                        momoNotify('簽到失敗 ‼️', responses[obj.data.status] || obj.data.status);
                     }
                 } else {
                     momoNotify('Cookie 已過期 ‼️', '請重新登入');
