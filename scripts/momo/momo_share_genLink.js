@@ -167,7 +167,7 @@ function getPromoCloudConfig() {
     );
 }
 function generateShareLink() {
-    $task.fetch(shareCheckInRequest).then(
+    $task.fetch(shareRequest).then(
         (response) => {
             if (response.statusCode === 200) {
                 console.log('share link ok');
