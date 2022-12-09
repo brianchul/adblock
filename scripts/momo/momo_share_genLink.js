@@ -55,22 +55,6 @@ const shareRequest = {
       },
 };
 
-const shareCheckInRequest = {
-    url: '',
-    method: 'POST', // Optional, default GET.
-    headers: {
-        Cookie: $prefs.valueForKey('momoCookie'),
-        'Content-Type': 'application/json;charset=utf-8',
-        'User-Agent': $prefs.valueForKey('momoUserAgent'),
-        Referer: 'https://www.momoshop.com.tw/',
-    },
-    body:  {
-        pNo : '',
-        doAction : 'link',
-        employeeID: $prefs.valueForKey('momoShareFriendID')
-      },
-};
-
 function getEventPageUrl() {
     console.log('----------------------------------------------------');
     $task.fetch(mainPageRequest).then(
@@ -165,9 +149,6 @@ function getPromoCloudConfig() {
                     shareRequest.url = pUrl;
                     shareRequest.body.pNo = pNo;
                     shareRequest.body = JSON.stringify(shareRequest.body);
-                    shareCheckInRequest.url = pUrl;
-                    shareCheckInRequest.body.pNo = pNo;
-                    shareCheckInRequest.body = JSON.stringify(shareCheckInRequest.body);
                     generateShareLink();
                 } catch (error) {
                     console.log(error);
@@ -189,62 +170,14 @@ function generateShareLink() {
     $task.fetch(shareCheckInRequest).then(
         (response) => {
             if (response.statusCode === 200) {
-                console.log('share checkin ok');
+                console.log('share link ok');
                 momoNotify('分享連結已產生 ✅', '');
             }
         })
 }
-function shareCheckIn() {
-    console.log('----------------------------------------------------');
-    try {
-        $task.fetch(shareCheckInRequest).then(
-            (response) => {
-                if (response.statusCode === 200) {
-                    console.log('share ok');
-                    const data = response.body;
-                    const obj = JSON.parse(data);
-                    const responses = {
-                        'D'             : '請於活動時間內參加活動',
-                        'L'             : '請重新登入',
-                        'APP'           : '請在APP參加此活動',
-                        'ERR'           : '很抱歉 目前系統繁忙 請稍後再試',
-                        'ERROR'         : 'ERROR 很抱歉，目前系統繁忙，請稍後再試',
-                        'EPN'           : 'ERROR 活動不存在',
-                        'EPN2'           : 'ERROR 活動不存在',
-                        //link(連結)專用訊息
-                        'OK'          : '恭喜！成功幫好友簽到完成',
-                        'linked'      : '已有他人協助好友完成簽到',//幫好友簽到已達今日上限
-                        'MAX'         : '您的好友已達活動分享上限',//幫好友簽到已達活動上限
-                        'linkedFriend': '今日已幫好友簽到完成',
-                        'notshared'   : '此連結已過期，需請好友重新分享今日連結',
-                        'E_LINK'      : '不能分享給自己'
-                      }
-                    
-                    if (obj.data.status === 'OK') {
-                        momoNotify('今日分享成功 ✅', '');
-                    } else {
-                        momoNotify('分享失敗 ‼️', responses[obj.data.status]);
-                        console.log(obj.data.status);
-                    }
-                } else {
-                    momoNotify('Cookie 已過期 ‼️', '請重新登入');
-                }
-                $done();
-            },
-            (reason) => {
-                momoNotify('分享失敗 ‼️', '連線錯誤');
-                $done();
-            }
-        );
-    } catch (error) {
-        console.log(error);
-        $done();
-    }
-}
 console.log($prefs.valueForKey('momoCookie'));
 console.log($prefs.valueForKey('momoUserAgent'));
+console.log($prefs.valueForKey('momoShareFriendID'));
 const rtime = Math.floor(Math.random() * 300);
-const r2time = Math.floor(Math.random() * 300);
 console.log(`wait for ${rtime} seconds to run`);
 setTimeout(() => getEventPageUrl(), rtime * 1000);
-setTimeout(() => shareCheckIn(), (r2time + 300) * 1000)
