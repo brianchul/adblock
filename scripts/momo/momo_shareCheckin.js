@@ -243,8 +243,8 @@ function shareCheckIn() {
 }
 console.log($prefs.valueForKey('momoCookie'));
 console.log($prefs.valueForKey('momoUserAgent'));
-const rtime = 1;Math.floor(Math.random() * 300);
-const r2time = 1;Math.floor(Math.random() * 300);
+const rtime = Math.floor(Math.random() * 300);
+const r2time = Math.floor(Math.random() * 300);
 console.log(`wait for ${rtime} seconds to run`);
 setTimeout(() => getEventPageUrl(), rtime * 1000);
 setTimeout(() => shareCheckIn(), (r2time + 300) * 1000)
