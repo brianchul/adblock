@@ -115,6 +115,17 @@ function getJavascriptUrl() {
                 console.log('get javascript ok');
                 try {
                     const data = response.body;
+
+                    try{
+                        const endTimeRe = /year\:\s'(.*)'\,.*\n.*\n.*timeend:\s'(.*)'/i;
+                        const endTimeMatch = data.match(endTimeRe);
+                        const endTime = endTimeMatch[1]+endTimeMatch[2];
+                        momoNotify('本輪簽到結束時間', endTime);
+                    }
+                    catch(err){
+                        momoNotify('無法取得結束時間','');
+                    }
+
                     const re =
                         /https:\/\/(.*)\/promo-cloud-setPunch-[a-z0-9]{3,}\.js\?t=[0-9]{13}/i;
                     const found = data.match(re);
@@ -153,9 +164,7 @@ function getPromoCloudConfig() {
                     const pUrlRe = /punchConfig\.serviceUrl(.*)'(.*)'/i;
                     const pUrl = data.match(pUrlRe)[2];
 
-                    const endTimeRe = /punchConfig\.lastDayEnd(.*)'(.*)'/i;
-                    const endTime = data.match(endTimeRe)[2];
-                    momoNotify('本輪簽到結束時間', endTime);
+                    
 
 
                     checkinRequest.url = pUrl;
