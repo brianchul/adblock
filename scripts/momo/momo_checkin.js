@@ -39,7 +39,10 @@ const jsCodeRequest = {
     headers: momoHeaders,
 };
 
-const checkinRequest = {
+const checkInAction = "reg"
+const taskAction = "taskFinished"
+
+const newRequest = {
     url: '',
     method: 'POST', // Optional, default GET.
     headers: {
@@ -48,7 +51,7 @@ const checkinRequest = {
         'User-Agent': $prefs.valueForKey('momoUserAgent'),
         Referer: 'https://www.momoshop.com.tw/',
     },
-    body: JSON.parse($prefs.valueForKey('momoBody')),
+    body: {"pNo":"","doAction": ""},
 };
 
 function getEventPageUrl() {
@@ -127,7 +130,7 @@ function getJavascriptUrl() {
                     }
 
                     const re =
-                        /https:\/\/(.*)\/promo-cloud-setPunch-[a-z0-9]{3,}\.js\?t=[0-9]{13}/i;
+                        /https:\/\/(.*)\/promo-cloud-setPunch(.*)\.js\?t=[0-9]{13}/i;
                     const found = data.match(re);
                     const url = found[0];
                     jsCodeRequest.url = url;
@@ -167,10 +170,7 @@ function getPromoCloudConfig() {
                     
 
 
-                    checkinRequest.url = pUrl;
-                    checkinRequest.body.pNo = pNo;
-                    checkinRequest.body = JSON.stringify(checkinRequest.body);
-                    checkIn();
+                    checkIn(pUrl, pNo, checkInAction);
                 } catch (error) {
                     console.log(error);
                     momoNotify('取得活動 ID 失敗 ‼️', error);
@@ -188,49 +188,59 @@ function getPromoCloudConfig() {
     );
 }
 
-function checkIn() {
+function checkIn(pUrl, pNo, action) {
     console.log('----------------------------------------------------');
+    newRequest.url = pUrl;
+    newRequest.body.pNo = pNo;
+    newRequest.body.doAction = action
+    newRequest.body = JSON.stringify(newRequest.body);
+    const responses = {
+        'D'             : '請於活動時間內參加活動',
+        'L'             : '請重新登入',
+        'APP'           : '請在APP參加此活動',
+        'ERR'           : '很抱歉 目前系統繁忙 請稍後再試',
+        'ERROR'         : 'ERROR 很抱歉，目前系統繁忙，請稍後再試',
+        'EPN'           : 'ERROR 活動不存在',
+        'EPN2'           : 'ERROR 活動不存在',
+        //punch(簽到)專用訊息
+        'OK'          : '簽到成功，感謝您對本活動的支持',
+        'RA'          : '今日已完成簽到',
+        'MAX'         : '簽到已達上限',
+        'E_task'      : '請先完成任務'
+    }
     try {
-        $task.fetch(checkinRequest).then(
+        $task.fetch(newRequest).then(
             (response) => {
                 if (response.statusCode === 200) {
-                    console.log('check in ok');
                     const data = response.body;
                     const obj = JSON.parse(data);
-                    const responses = {
-                        'D'             : '請於活動時間內參加活動',
-                        'L'             : '請重新登入',
-                        'APP'           : '請在APP參加此活動',
-                        'ERR'           : '很抱歉 目前系統繁忙 請稍後再試',
-                        'ERROR'         : 'ERROR 很抱歉，目前系統繁忙，請稍後再試',
-                        'EPN'           : 'ERROR 活動不存在',
-                        'EPN2'           : 'ERROR 活動不存在',
-                        //punch(簽到)專用訊息
-                        'OK'          : '簽到成功，感謝您對本活動的支持',
-                        'RA'          : '今日已完成簽到',
-                        'MAX'         : '簽到已達上限'
-                    }
                     if (obj.data.status === 'OK') {
+                        console.log('check in ok');
                         momoNotify('今日簽到成功 ✅', '');
+                    } else if (obj.data.status === 'E_task') {
+                        checkIn(pUrl, pNo, taskAction).then(() => {
+                            setTimeout(() => checkIn(pUrl, pNo, checkInAction), 10 * 1000);
+                        });
                     } else {
                         momoNotify('簽到失敗 ‼️', responses[obj.data.status] || obj.data.status);
                     }
                 } else {
                     momoNotify('Cookie 已過期 ‼️', '請重新登入');
                 }
-                $done();
+                
             },
             (reason) => {
                 momoNotify('簽到失敗 ‼️', '連線錯誤');
                 $done();
             }
         );
+        if(action === checkInAction) $done();
     } catch (error) {
         console.log(error);
+        $done();
     }
 }
 console.log($prefs.valueForKey('momoCookie'));
-console.log($prefs.valueForKey('momoBody'));
 console.log($prefs.valueForKey('momoUserAgent'));
 const rtime = Math.floor(Math.random() * 600);
 console.log(`wait for ${rtime} seconds to run`);
