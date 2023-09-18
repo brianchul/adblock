@@ -242,6 +242,6 @@ function checkIn(pUrl, pNo, action) {
 }
 console.log($prefs.valueForKey('momoCookie'));
 console.log($prefs.valueForKey('momoUserAgent'));
-const rtime = 1;Math.floor(Math.random() * 600);
+const rtime = Math.floor(Math.random() * 600);
 console.log(`wait for ${rtime} seconds to run`);
 setTimeout(() => getEventPageUrl(), rtime * 1000);
